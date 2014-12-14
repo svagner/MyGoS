@@ -1,0 +1,28 @@
+{{define "IndexPage"}}
+{{template "header"}}
+{{template "static"}}
+<link href="/static/css/index.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="/static/js/index.js"></script>
+{{template "body"}}
+<div class="main">
+<div class="data">{{.Data}}</div>
+<div class="main_cont">
+  <div class="menu_top_bg"></div>
+  <div class="sub_menu" id="nav">
+    <ul>
+      <li><a href="#" class="selected" onclick="InterfaceState(false)">Interface state</a></li>
+      <li><a href="#" onclick="InterfaceSettings()">Interface settings</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_window" id="main_data">
+</div>
+</div>
+{{template "footer"}}
+{{end}}

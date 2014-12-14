@@ -1,0 +1,21 @@
+{{define "header" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{{.Title}}</title>
+{{end}}
+{{define "static" }}
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+<meta charset="utf-8">
+<link href="/static/css/menu.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="/static/js/menu.js"></script>
+{{end}}
+{{define "body"}}
+</head>
+<body>
+{{template "Menu"}}
+{{end}}
+{{define "footer"}}
+</body>
+</head>
+{{end}}
