@@ -2,7 +2,9 @@ package main
 
 import (
 	"./config"
+	"./interface/databases"
 	"./interface/web"
+	"./tools/backup"
 	"flag"
 	"github.com/yookoala/realpath/realpath"
 	"log"
@@ -72,5 +74,9 @@ func main() {
 			log.Println(err.Error())
 		}
 	}
+	if err := backup.BackupCron.Restore(config.Global.Dump); err != nil {
+		log.Println(err.Error())
+	}
+	backup.BackupCron.AddTask(databases.GetDbListForBackup, nil)
 	web.Start(config.Http)
 }

@@ -1,7 +1,12 @@
 package client
 
 import (
+	"../../tools/backup"
+	"../../tools/mysql"
+	"../convert"
+	"../databases"
 	"../events"
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"log"
 )
@@ -78,14 +83,18 @@ func NewClient(ws *websocket.Conn, ip, ua string) {
 func (self *Command) Run(client *Client) {
 	switch self.Cmd {
 	case "test":
-		client.output <- "pong: " + self.Data
+		data, _ := json.Marshal("pong: " + self.Data)
+		client.output <- string(data)
 	case "subscribe":
 		if client.events.Find(self.Data) {
-			client.output <- "Client already subscribed to events '" + self.Data + "'"
+			data, _ := json.Marshal("Client already subscribed to events '" + self.Data + "'")
+			Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Subscribe to [" + self.Data + "] error: " + string(data)}
+			client.output <- convert.ConvertToJSON_HTML(Data)
 			return
 		}
 		if err := events.Subscribe(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
-			log.Println(err.Error())
+			Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Subscribe to [" + self.Data + "] error: " + err.Error()}
+			client.output <- convert.ConvertToJSON_HTML(Data)
 		} else {
 			client.events = append(client.events, self.Data)
 		}
@@ -95,7 +104,66 @@ func (self *Command) Run(client *Client) {
 		} else {
 			client.events = client.events.Remove(self.Data)
 		}
+	case "replicationGroups":
+		if err := events.ReplicationGroups(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
+			log.Println(err.Error())
+		}
+	case "replicationGroupsEdit":
+		if err := events.ReplicationGroupsEdit(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
+			log.Println(err.Error())
+		}
+	case "replicationGroupsDelete":
+		if err := events.ReplicationGroupsDelete(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
+			log.Println(err.Error())
+		}
+	case "getDatabasesData":
+		res := struct {
+			Command string
+			Data    interface{}
+		}{
+			Command: self.Cmd,
+			Data:    databases.GetDatabasesList(),
+		}
+		log.Println(res)
+		client.output <- convert.ConvertToJSON_HTML(res)
+	case "getHostData":
+		if _, ok := databases.HostsList[self.Data]; !ok {
+			Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Host " + self.Data + " wasn't found"}
+			client.output <- convert.ConvertToJSON_HTML(Data)
+			return
+		}
+		res := struct {
+			Command string
+			Data    interface{}
+		}{
+			Command: self.Cmd,
+			Data:    databases.HostsList[self.Data].GetDescription(),
+		}
+		client.output <- convert.ConvertToJSON_HTML(res)
+	case "MySQLHost":
+		if err := events.MySQLHost(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
+			log.Println(err.Error())
+		}
+	case "MySQLHostEdit":
+		backup.PackData(databases.HostsList)
+	case "MySQLHostDelete":
+		if err := events.MySQLHostDelete(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
+			log.Println(err.Error())
+		}
+	case "GetSlaveInfo":
+		var HostInfo struct {
+			Host string
+			Port string
+		}
+		if err := json.Unmarshal([]byte(self.Data), &HostInfo); err != nil {
+			log.Println(err.Error())
+			return
+		}
+		if err := mysql.GetMySQLInfo(HostInfo.Host, HostInfo.Port); err != nil {
+			log.Println(err.Error())
+		}
 	default:
-		client.output <- "Command wasn't found"
+		Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Command [" + self.Cmd + "] wasn't found"}
+		client.output <- convert.ConvertToJSON_HTML(Data)
 	}
 }

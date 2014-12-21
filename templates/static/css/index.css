@@ -1,7 +1,7 @@
 /* Wrapper */
 .main 
 {
-  min-width: 1000px;
+  min-width: 50px;
   margin-top: 70px;
   position: fixed;
   width: 99%;
@@ -83,7 +83,7 @@
   background-color: #FFFFFF;
   padding-top:10px;
   padding-left:20px;
-  min-width: 800px;
+  min-width: 80px;
   height: 80%;
   margin-top: 10px;
   z-index: 9999;

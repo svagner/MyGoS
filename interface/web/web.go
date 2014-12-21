@@ -36,13 +36,14 @@ func Start(conf config.HTTPConfig) {
 		http.ServeFile(w, r, conf.TemplateDir+"/"+r.URL.Path)
 	})
 	http.HandleFunc("/", handleIndex)
+	http.HandleFunc("/databases", handleDatabases)
 	http.HandleFunc("/ws", handleWs)
 	var err error
 	templates, err = template.ParseGlob(conf.TemplateDir + "/html/*.html")
 	if err != nil {
 		log.Println("Parse templates failed: " + err.Error())
 	}
-	http.ListenAndServe(conf.Host+":"+strconv.Itoa(conf.Port), nil)
+	log.Panicln(http.ListenAndServe(conf.Host+":"+strconv.Itoa(conf.Port), nil))
 }
 
 // Handle Pages
@@ -59,6 +60,13 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	err := templates.ExecuteTemplate(w, "IndexPage", &PadeDescription{Title: "General page", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: r.UserAgent() + " " + r.Host})
+	if err != nil {
+		log.Println("Error send error's page: " + err.Error())
+	}
+}
+
+func handleDatabases(w http.ResponseWriter, r *http.Request) {
+	err := templates.ExecuteTemplate(w, "DatabasesPage", &PadeDescription{Title: "General page", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: r.UserAgent() + " " + r.Host})
 	if err != nil {
 		log.Println("Error send error's page: " + err.Error())
 	}

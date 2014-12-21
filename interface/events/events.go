@@ -2,7 +2,6 @@ package events
 
 import (
 	"errors"
-	"log"
 )
 
 type clientChan struct {
@@ -22,14 +21,41 @@ func (self chanList) Remove(clchan clientChan) (res chanList) {
 }
 
 type Event struct {
-	handle      func()
+	genEvent    func(string, string)
+	channel     chan string
 	subscribers chanList
 }
 
 var Events = make(map[string]*Event)
 
+func (self *Event) Notifier() {
+	for {
+		select {
+		case data := <-self.channel:
+			for _, cc := range self.subscribers {
+				cc.c <- data
+			}
+		}
+	}
+}
+
+func (self *Event) AddUser(out chan string, ip string) {
+	self.subscribers = append(self.subscribers, clientChan{c: out, ip: ip})
+}
+
 func Init() {
-	Events["connectlist"] = &Event{}
+	Events["connectlist"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	go Events["connectlist"].Notifier()
+	Events["replicationGroups"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	go Events["replicationGroups"].Notifier()
+	//Events["databaseHosts"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	//go Events["databaseHosts"].Notifier()
+	// Events about updata/add/delete MySQL hosts
+	Events["MySQLHost"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	go Events["MySQLHost"].Notifier()
+	// Events about mysql data statistics etc.
+	Events["MySQLData"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	go Events["MySQLData"].Notifier()
 }
 
 func Unsubscribe(event string, out chan string, ip string) error {
@@ -41,10 +67,9 @@ func Subscribe(event string, out chan string, ip string) error {
 	if _, ok := Events[event]; !ok {
 		return errors.New("Channel wasn't found")
 	}
-	Events[event].subscribers = append(Events[event].subscribers, clientChan{c: out, ip: ip})
-	for _, cc := range Events[event].subscribers {
-		log.Println("Chan " + event + ": client " + cc.ip)
-		cc.c <- "New client [" + ip + "] subscribe to event " + event
+	Events[event].AddUser(out, ip)
+	if Events[event].genEvent != nil {
+		Events[event].genEvent(event, ip)
 	}
 	return nil
 }

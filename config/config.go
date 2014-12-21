@@ -14,6 +14,7 @@ type HTTPConfig struct {
 type Config struct {
 	Global struct {
 		Type string
+		Dump string
 	}
 	Http HTTPConfig
 }

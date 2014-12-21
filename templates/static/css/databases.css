@@ -1,0 +1,219 @@
+/* Wrapper */
+.main 
+{
+  min-width: 50px;
+  margin-top: 70px;
+  position: fixed;
+  width: 99%;
+  height: 90%;
+}
+
+/* General header */
+.general_header
+{
+  float:left;
+  width:70%;
+  padding:10px;
+  z-index: 10000;
+}
+
+/* Central Buttons */
+
+.general_buttons
+{
+/*  margin-left: 195px;
+  background-color: #FFFFFF;
+  padding-top:10px;
+  padding-left:20px;
+  min-width: 80px;
+  height: 80%;
+  margin-top: 10px;*/
+  z-index: 9999;
+  border-radius: 20px;
+  text-indent:8px;
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+  font-size:11px;
+}
+
+/* Central window */
+.main_window
+{
+  margin-left: 10px;
+  background-color: #FFFFFF;
+  min-width: 80px;
+  height: 80%;
+  margin-top: 10px;
+  border-radius: 20px;
+  text-indent:8px;
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+  font-size:11px;
+  overflow: auto;
+}
+
+.data
+{
+  text-indent:8px;
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+  font-size:11px;
+  color:#FFFFFF;
+}
+
+.AddHost {
+  border-spacing: 5px;
+  width: 90%;
+}
+
+.AddHost tr:nth-child(2n+1) {
+  background-color: #F5F5F5;
+}
+
+.AddHost tr:nth-child(2n) {
+  background-color: #FFFFFF;
+}
+
+.AddHost input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px #dcdcdc;
+  transition: box-shadow 0.3s, border 0.3s;
+}
+
+.AddHost input[type="text"]:focus,
+.AddHost input[type="text"].focus {
+  width: 100%;
+  border: solid 1px #707070;
+  box-shadow: 0 0 5px 1px #969696;
+}
+
+.AddHost input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px #dcdcdc;
+  transition: box-shadow 0.3s, border 0.3s;
+}
+
+.AddHost input[type="password"]:focus,
+.AddHost input[type="password"].focus {
+  width: 100%;
+  border: solid 1px #707070;
+  box-shadow: 0 0 5px 1px #969696;
+}
+
+.Databases {
+  width: 100%;
+}
+
+.Databases table, td
+{
+    font:100% Arial, Helvetica, sans-serif; 
+}
+.Databases table
+{
+  width:100%;
+  border-collapse:collapse;
+  margin:1em 0;
+}
+
+.Databases th, td
+{
+  text-align:left;
+  padding:.5em;
+  border:1px solid #fff;
+}
+
+.Databases th
+{
+  background:#848484;
+  color:#fff;
+}
+
+.Databases td
+{
+  background:#e5f1f4;
+}
+
+.Databases tr.even td
+{
+  background:#e5f1f4;
+}
+
+.Databases tr.odd td
+{
+  background:#f8fbfc;
+}
+
+.Databases th.over, tr.even th.over, tr.odd th.over
+{
+  background:#4a98af;
+}
+
+.Databases th.down, tr.even th.down, tr.odd th.down
+{
+  background:#bce774;
+}
+.Databases th.selected, tr.even th.selected, tr.odd th.selected
+{
+}
+
+.Databases td.over, tr.even td.over, tr.odd td.over
+{
+  background:#ecfbd4;
+}
+
+.Databases td.down, tr.even td.down, tr.odd td.down 
+{
+  background:#bce774;
+  color:#fff;
+}
+
+.Databases td.selected, tr.even td.selected, tr.odd td.selected
+{
+  background:#bce774;
+  color:#555;
+}
+
+.Databases td.empty, tr.odd td.empty, tr.even td.empty
+{
+  background:#fff;
+}
+
+.DBGHeader {
+  text-align: center;
+  font:200% Arial, Helvetica, sans-serif; 
+  font-style: normal;
+  font-size:large;
+}
+
+.dropdown {
+  display: inline-block;
+  position: relative;
+//  overflow: hidden;
+  height: 28px;
+  width: 106%;
+  background: #f2f2f2;
+  border: 1px solid;
+  border-color: white #f7f7f7 #f5f5f5;
+  border-radius: 3px;
+  background-image: -webkit-linear-gradient(top, transparent, rgba(0, 0, 0, 0.06));
+  background-image: -moz-linear-gradient(top, transparent, rgba(0, 0, 0, 0.06));
+  background-image: -o-linear-gradient(top, transparent, rgba(0, 0, 0, 0.06));
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.06));
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+}
+
+.SelectRGroup {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 6px 8px 6px 10px;
+  height: 28px;
+  line-height: 14px;
+  font-size: 12px;
+  color: #62717a;
+  text-shadow: 0 1px white;
+  background: #f2f2f2;
+  background: rgba(0, 0, 0, 0) !important;
+  border: 0;
+  border-radius: 0;
+}

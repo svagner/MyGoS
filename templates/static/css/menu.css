@@ -144,10 +144,10 @@ q:before, q:after {
 	content: '';
 	content: none;
 }
-table {
+/*table {
 	border-collapse: collapse;
 	border-spacing: 0;
-}
+}*/
 
 /* Default Styles 
 --------------------------------------------------------------------*/
@@ -164,8 +164,8 @@ body {
 .wrap {
         position: fixed;
         width: 100%;
-        min-width: 800px;
-        z-index: 100000;
+        min-width: 200px;
+        z-index: 1;
 }
 
 nav {

@@ -1,0 +1,27 @@
+{{define "DatabasesPage"}}
+{{template "header"}}
+{{template "static"}}
+<link href="/static/css/databases.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/css3buttons.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/popup.css" rel="stylesheet" type="text/css">
+<link href="http://akquinet.github.io/jquery-toastmessage-plugin/demo/css/jquery.toastmessage-min.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="http://akquinet.github.io/jquery-toastmessage-plugin/demo/jquery.toastmessage-min.js"></script>
+<script src="/static/js/popup.js"></script>
+<script src="/static/js/databases.js"></script>
+
+
+{{template "body"}}
+<div class="main">
+  <div class="data">
+  <div class="general_header" align="left"><h2>Databases replication management</div><div class="general_buttons" align="left"><a href="#" class="primary button" onclick="addReplicationGroup();"><span class="plus icon"></span>Add replication group</a>&nbsp;&nbsp;<a href="#" class="primary button" onclick="editMySQLHost();"><span class="plus icon"></span>Add host</a></div>
+  </div>
+  <div class="main_window" id="main_data">
+  </div>
+</div>
+{{template "footer"}}
+{{end}}
