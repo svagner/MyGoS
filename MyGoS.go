@@ -74,9 +74,13 @@ func main() {
 			log.Println(err.Error())
 		}
 	}
-	if err := backup.BackupCron.Restore(config.Global.Dump); err != nil {
+	backup.BackupCron.AddTask("databases", databases.GetDbListForBackup, databases.RestoreDbListFromBackup)
+	bytesRestore, err := backup.BackupCron.Restore(config.Global.DumpFile)
+	if err != nil {
 		log.Println(err.Error())
 	}
-	backup.BackupCron.AddTask(databases.GetDbListForBackup, nil)
+	log.Println("Restore from backup: ", bytesRestore, "bytes")
+
+	backup.BackupCron.Start(config.Global.DumpPeriod, config.Global.DumpFile)
 	web.Start(config.Http)
 }

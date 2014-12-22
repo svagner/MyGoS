@@ -2,7 +2,6 @@ package databases
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/gob"
 	"errors"
 )
@@ -35,15 +34,25 @@ func (self Db) GetDescription() DbDescr {
 
 func (self DbLst) Encode() ([]byte, error) {
 	gobBuffer := new(bytes.Buffer)
-	binBuffer := new(bytes.Buffer)
 	gobEnc := gob.NewEncoder(gobBuffer)
 	if err := gobEnc.Encode(self); err != nil {
 		return nil, err
 	}
-	if err := binary.Write(binBuffer, binary.BigEndian, gobBuffer.Bytes()); err != nil {
-		return nil, err
+	return gobBuffer.Bytes(), nil
+}
+
+func (self *DbLst) Decode(data []byte) error {
+	buffer := bytes.NewBuffer(data)
+	decoder := gob.NewDecoder(buffer)
+	if err := decoder.Decode(self); err != nil {
+		return err
 	}
-	return binBuffer.Bytes(), nil
+	for key, _ := range *self {
+		for host, _ := range (*self)[key] {
+			HostsList[host] = databaseList[key][host]
+		}
+	}
+	return nil
 }
 
 func AddReplicaGroup(name string) error {
@@ -116,4 +125,12 @@ func GetDbListForBackup() ([]byte, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func RestoreDbListFromBackup(data []byte) error {
+	err := databaseList.Decode(data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

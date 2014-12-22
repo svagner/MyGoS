@@ -1,7 +1,6 @@
 package client
 
 import (
-	"../../tools/backup"
 	"../../tools/mysql"
 	"../convert"
 	"../databases"
@@ -145,7 +144,7 @@ func (self *Command) Run(client *Client) {
 			log.Println(err.Error())
 		}
 	case "MySQLHostEdit":
-		backup.PackData(databases.HostsList)
+		log.Println("Try to edit host")
 	case "MySQLHostDelete":
 		if err := events.MySQLHostDelete(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
 			log.Println(err.Error())
