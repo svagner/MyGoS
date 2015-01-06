@@ -48,14 +48,14 @@ func Init() {
 	go Events["connectlist"].Notifier()
 	Events["replicationGroups"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
 	go Events["replicationGroups"].Notifier()
-	//Events["databaseHosts"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
-	//go Events["databaseHosts"].Notifier()
 	// Events about updata/add/delete MySQL hosts
 	Events["MySQLHost"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
 	go Events["MySQLHost"].Notifier()
 	// Events about mysql data statistics etc.
-	Events["MySQLData"] = &Event{ConnectionListSubscribe, make(chan string), make(chanList, 0)}
+	Events["MySQLData"] = &Event{MySQLDataSubscribe, make(chan string), make(chanList, 0)}
 	go Events["MySQLData"].Notifier()
+	Events["replicationSteps"] = &Event{replicationStepsSubscribe, make(chan string), make(chanList, 0)}
+	go Events["replicationSteps"].Notifier()
 }
 
 func Unsubscribe(event string, out chan string, ip string) error {

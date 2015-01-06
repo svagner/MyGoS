@@ -1,0 +1,75 @@
+{{define "DatabasesSettingsPage"}}
+{{template "header"}}
+{{template "static"}}
+<link href="/static/css/dbsettings.css" rel="stylesheet" type="test/css" />
+<link href="/static/css/index.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/static/css/codemirror/codemirror.css">
+<link rel="stylesheet" href="/static/css/codemirror/themes/eclipse.css">
+
+<link href="/static/css/css3buttons.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/popup.css" rel="stylesheet" type="text/css">
+<link href="http://akquinet.github.io/jquery-toastmessage-plugin/demo/css/jquery.toastmessage-min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="/static/js/external/jquery-1.9.1.js"></script>
+<script src="/static/js/external/jquery.min.js"></script>
+<script src="/static/js/external/jquery-ui.js"></script>
+<script src="http://akquinet.github.io/jquery-toastmessage-plugin/demo/jquery.toastmessage-min.js"></script>
+<script src="/static/js/popup.js"></script>
+<script src="/static/js/dbsettings.js"></script>
+<script src="/static/js/external/codemirror/codemirror.js"></script>
+<script src="/static/js/external/codemirror/mode/javascript/javascript.js"></script>
+<script src="/static/js/external/codemirror/addon/selection/active-line.js"></script>
+<script src="/static/js/external/codemirror/addon/edit/matchbrackets.js"></script>
+{{template "body"}}
+ 
+<div class="main">
+<div class="data">{{.Data.User}}
+  <div class="general_buttons" align="right"><a href="#" class="primary button" onclick="addReplicationScript();"><span class="plus icon"></span>Add script as step</a>&nbsp;&nbsp;<a href="#" class="primary button" onclick="saveSetting();"><span class="lock icon" style="font-size: medium"></span>Save settings</a></div>
+  </div>
+<div class="main_cont">
+  <div class="menu_top_bg"></div>
+  <div class="sub_menu" id="nav">
+    <ul>
+      <li><a href="#" class="selected">MySQL Moving Replication</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_window" id="main_data">
+  <p>Steps of Replication changer:</p><br>
+<div class="ui-widget ui-helper-clearfix">
+ 
+<ul id="stepsList" class="stepsList ui-widget-content ui-state-default ui-helper-reset ui-helper-clearfix">
+  <h4 class="ui-widget-header"><span class="ui-icon ui-icon-selectedSteps"></span>Steps:</h4>
+  {{ range $index, $step := .Data.StepsList }}
+  <li class="ui-widget-content ui-corner-tr">
+  <h5 class="ui-widget-header">{{.Name}}</h5>
+    {{ if .Content}}
+    <a href="#" title="View step content" class="ui-icon ui-icon-zoomin">View step content</a>
+    <a href="#" title="Run test" class="ui-icon ui-icon-play">Run test</a>
+    <a href="#" title="Delete step" class="ui-icon ui-icon-trash">Delete step</a>
+    {{ end }}
+    <a href="link/to/selectedSteps/script/when/we/have/js/off" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a>
+  </li>
+  {{ end }}
+</ul>
+ 
+<div id="selectedSteps" class="ui-widget-content ui-state-default">
+  <h4 class="ui-widget-header"><span class="ui-icon ui-icon-selectedSteps"></span>Selected steps:</h4>
+</div>
+ 
+</div>
+</div>
+</div>
+<script>
+var stepsList = {
+  {{ range $index, $step := .Data.StepsList }}
+  {{ if .Content }}
+  {{.Name}}: {{.Content}},
+  {{ end }}
+  {{ end }}
+}
+</script>
+
+{{template "footer"}}
+{{end}}

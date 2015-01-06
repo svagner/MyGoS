@@ -1,0 +1,80 @@
+#stepsList 
+{ 
+  float: left; 
+  width: 45%; 
+  min-height: 405px; 
+  padding: 1%; 
+}
+
+.stepsList.custom-state-active 
+{ 
+  background: #eee; 
+}
+
+.stepsList li 
+{ 
+  float: left; 
+  width: auto; 
+  padding: 0.4em; 
+  margin: 0 0.4em 0.4em 0; 
+  text-align: center; 
+}
+
+.stepsList li h5 
+{ 
+  margin: 0 0 0.4em; 
+  cursor: move; 
+}
+
+.stepsList li a 
+{ 
+  float: right; 
+}
+
+.stepsList li a.ui-icon-zoomin 
+{ 
+  float: left; 
+}
+
+#selectedSteps 
+{ 
+  float: left; width: 45%; 
+  min-height: 405px; 
+  padding: 1%; 
+  margin-right: 5px;
+}
+
+.selectedSteps h4 
+{ 
+  line-height: 16px; 
+  margin: 0 0 0.4em; 
+}
+
+.selectedSteps h4 .ui-icon 
+{ 
+  float: left; 
+}
+
+/* General header */
+.general_header
+{
+  float:left;
+  z-index: 10000;
+}
+
+/* Central Buttons */
+
+.general_buttons
+{
+  z-index: 9999;
+  border-radius: 20px;
+  text-indent:8px;
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+  font-size:11px;
+}
+
+#scriptname 
+{
+  width: 100%;
+  text-align: center;
+}

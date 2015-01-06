@@ -1,7 +1,7 @@
 package client
 
 import (
-	"../../tools/mysql"
+	//	"../../tools/mysql"
 	"../convert"
 	"../databases"
 	"../events"
@@ -145,20 +145,50 @@ func (self *Command) Run(client *Client) {
 		}
 	case "MySQLHostEdit":
 		log.Println("Try to edit host")
+	case "addReplicationStepScript":
+		data := new(databases.MySQLReplicaScript)
+		if err := json.Unmarshal([]byte(self.Data), &data); err != nil {
+			Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Command data [" + self.Data + "] isn't correct"}
+			client.output <- convert.ConvertToJSON_HTML(Data)
+		}
+		log.Println(data)
+		events.ReplicationStepAdd(*data)
+	case "deleteReplicationStepScript":
+		events.ReplicationStepDelete(self.Data)
+	case "testReplicationStepScript":
+		data, errRes := databases.RunReplicationStep(self.Data, true)
+		type ScriptRes struct {
+			Data  string
+			Error string
+		}
+		var res []byte
+		var err error
+		if errRes != nil {
+			res, err = json.Marshal(ScriptRes{Data: data, Error: errRes.Error()})
+		} else {
+			res, err = json.Marshal(ScriptRes{Data: data, Error: ""})
+		}
+		if err != nil {
+			Data := events.ResCmd{Channel: "testReplicationStepScript", Command: "error", Data: "Convert to JSON was failed! Was run: " + self.Data + " .Ended with error: " + err.Error()}
+			client.output <- convert.ConvertToJSON_HTML(Data)
+		} else {
+			if errRes != nil {
+				Data := events.ResCmd{Channel: "testReplicationStepScript", Command: "error", Data: string(res)}
+				client.output <- convert.ConvertToJSON_HTML(Data)
+			} else {
+				Data := events.ResCmd{Channel: "testReplicationStepScript", Command: "result", Data: string(res)}
+				client.output <- convert.ConvertToJSON_HTML(Data)
+			}
+		}
+	case "saveReplicationStepsSelected":
+		var data []string
+		if err := json.Unmarshal([]byte(self.Data), &data); err != nil {
+			Data := events.ResCmd{Channel: "Error", Command: "new", Data: "Command data [" + self.Data + "] isn't correct"}
+			client.output <- convert.ConvertToJSON_HTML(Data)
+		}
+		events.SaveReplicationStepsSelected(client.output, data)
 	case "MySQLHostDelete":
 		if err := events.MySQLHostDelete(self.Data, client.output, client.ws.RemoteAddr().String()); err != nil {
-			log.Println(err.Error())
-		}
-	case "GetSlaveInfo":
-		var HostInfo struct {
-			Host string
-			Port string
-		}
-		if err := json.Unmarshal([]byte(self.Data), &HostInfo); err != nil {
-			log.Println(err.Error())
-			return
-		}
-		if err := mysql.GetMySQLInfo(HostInfo.Host, HostInfo.Port); err != nil {
 			log.Println(err.Error())
 		}
 	default:

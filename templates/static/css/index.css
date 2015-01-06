@@ -15,6 +15,7 @@
   width:175px;
   padding:10px;
   z-index: 10000;
+  position: relative;
 }
 
 .menu_top_bg
@@ -84,13 +85,14 @@
   padding-top:10px;
   padding-left:20px;
   min-width: 80px;
-  height: 80%;
+  height: 90%;
   margin-top: 10px;
   z-index: 9999;
   border-radius: 20px;
   text-indent:8px;
   font-family:Verdana, Arial, Helvetica, sans-serif;
   font-size:11px;
+  overflow: auto;
 }
 
 .data

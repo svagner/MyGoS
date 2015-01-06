@@ -121,13 +121,12 @@ function Apprise(text, options) {
 					$me.dissapear();
 				}
 			} else if(e.keyCode===13) {
-
 				if(settings.buttons.confirm) {
 					
 					$("#apprise-btn-" + settings.buttons.confirm.id).trigger('click');
 				} else {
 					
-					$me.dissapear();
+					//$me.dissapear();
 				}
 			}
 		});

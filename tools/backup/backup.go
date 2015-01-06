@@ -58,10 +58,14 @@ func (self BackupCronT) Restore(file string) (readed int, err error) {
 		log.Println("[BACKUP RESTORE ERROR]", err.Error())
 		return
 	}
+	offset := STARTOFFSET + headerSize
+	newoffset := offset
 	for num, _ := range header {
-		if err := BackupCron[header[num].Name].putdata(readBuff[STARTOFFSET+headerSize : STARTOFFSET+headerSize+uint64(header[0].Size)]); err != nil {
+		newoffset += uint64(header[num].Size)
+		if err := BackupCron[header[num].Name].putdata(readBuff[offset:newoffset]); err != nil {
 			log.Println("[BACKUP RESTORE ERROR]", err.Error())
 		}
+		offset = newoffset
 	}
 	return
 }

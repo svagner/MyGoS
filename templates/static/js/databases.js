@@ -127,8 +127,12 @@ function WebSocket_connect() {
             }
         }
         if (data.Channel == "MySQLData" && data.Command == "update") {
-            var table = document.getElementById(data.Data.Group).rows[$('#'+data.Data.Group).find("[id='"+data.Data.Ip+"']").index()+1].cells;
-            table[5].innerHTML = data.Data.Position;
+            console.log(data.Data);
+            for (var key in data.Data) {
+                var table = document.getElementById(key).cells;
+                table[2].innerHTML = 'Uptime: '+data.Data[key].Uptime;
+                table[4].innerHTML = data.Data[key].Master.File+': '+data.Data[key].Master.Position;
+            }
 
         }
     };
@@ -150,7 +154,7 @@ function CreateHeaderContent(groupName) {
 }
 
 function CreateTablePrototipe(dbgroup) {
-    return "<table class='Databases' id='" + dbgroup + "'><thead><tr><th>Host</th><th>Port</th><th>Slave thread</th><th>Mysql Status</th><th>Slave Status</th><th>Replication</th><th>Service</th></tr></thead><tbody></tbody></table>"
+    return "<table class='Databases' id='" + dbgroup + "'><thead><tr><th>Host</th><th>Port</th><th>Mysql Status</th><th>Slave thread</th><th>Master Status</th><th>Slave Status</th><th>Service</th></tr></thead><tbody></tbody></table>"
 }
 
 function InsertDbHosts(data) {
@@ -194,12 +198,10 @@ function DeleteDbHost(host) {
 }
 
 function TestSqlInfo(group, host, port) {
-    //var table = document.getElementById('test').rows[$('#test').find("[id='127.0.0.1']").index()+1].cells;
-    //console.log(table);
     var hostInfo = {
         Host: host,
         Port: port
-    }
+    };
     var cmd = {
          'Cmd': 'GetSlaveInfo',
          'Data': JSON.stringify(hostInfo)

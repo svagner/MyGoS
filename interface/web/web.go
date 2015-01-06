@@ -3,6 +3,7 @@ package web
 import (
 	"../../config"
 	"../client"
+	"../databases"
 	"../events"
 	"github.com/gorilla/websocket"
 	"html/template"
@@ -37,6 +38,7 @@ func Start(conf config.HTTPConfig) {
 	})
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/databases", handleDatabases)
+	http.HandleFunc("/databases/settings", handleDBSettings)
 	http.HandleFunc("/ws", handleWs)
 	var err error
 	templates, err = template.ParseGlob(conf.TemplateDir + "/html/*.html")
@@ -67,6 +69,18 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 
 func handleDatabases(w http.ResponseWriter, r *http.Request) {
 	err := templates.ExecuteTemplate(w, "DatabasesPage", &PadeDescription{Title: "General page", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: r.UserAgent() + " " + r.Host})
+	if err != nil {
+		log.Println("Error send error's page: " + err.Error())
+	}
+}
+
+func handleDBSettings(w http.ResponseWriter, r *http.Request) {
+	type DBSetDataOnLoad struct {
+		User      string
+		StepsList []databases.MySQLReplicaStep
+	}
+	pageData := &DBSetDataOnLoad{User: r.UserAgent() + " " + r.Host, StepsList: databases.GetReplicaStepsForChoose()}
+	err := templates.ExecuteTemplate(w, "DatabasesSettingsPage", &PadeDescription{Title: "Database Settings", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: pageData})
 	if err != nil {
 		log.Println("Error send error's page: " + err.Error())
 	}

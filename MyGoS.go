@@ -75,6 +75,7 @@ func main() {
 		}
 	}
 	backup.BackupCron.AddTask("databases", databases.GetDbListForBackup, databases.RestoreDbListFromBackup)
+	backup.BackupCron.AddTask("replicationSteps", databases.StepsListPrepareForBackup, databases.RestoreStepsListFromBackup)
 	bytesRestore, err := backup.BackupCron.Restore(config.Global.DumpFile)
 	if err != nil {
 		log.Println(err.Error())
