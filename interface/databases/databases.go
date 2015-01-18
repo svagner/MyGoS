@@ -188,9 +188,9 @@ type _mySQLReplStepsHash map[string]*MySQLReplicaStep
 
 /* Type's methods */
 
-func (self _mySQLReplStepsHash) ToList() MySQLReplicaStepArray {
+func (self *_mySQLReplStepsHash) ToList() MySQLReplicaStepArray {
 	res := make([]MySQLReplicaStep, 0)
-	for _, value := range self {
+	for _, value := range *self {
 		res = append(res, *value)
 	}
 	return res
@@ -314,6 +314,7 @@ func RestoreStepsListFromBackup(data []byte) error {
 	if err := decoder.Decode(&dataRest); err != nil {
 		return err
 	}
+	log.Println(dataRest)
 	mySQLReplStepsHash.FromList(dataRest)
 	_, selected := mySQLReplStepsHash.GetSelected()
 	sort.Sort(selected)
@@ -323,6 +324,7 @@ func RestoreStepsListFromBackup(data []byte) error {
 }
 
 func StepsListPrepareForBackup() ([]byte, error) {
+	log.Println(mySQLReplStepsHash.ToList())
 	gobBuffer := new(bytes.Buffer)
 	gobEnc := gob.NewEncoder(gobBuffer)
 	if err := gobEnc.Encode(mySQLReplStepsHash.ToList()); err != nil {

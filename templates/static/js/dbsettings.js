@@ -1,139 +1,17 @@
 var websocket;
 var reconnect = false;
 var initAdd = false;
+var saver;
+var currPage;
 
 function WebSocket_connect_with_sleep() {
     window.setTimeout(WebSocket_connect, 1000)
 }
 
-//$(function() {
-function stepsInit() {
-    // there's the stepsList and the selectedSteps
-    var $stepsList = $( "#stepsList" ),
-      $selectedSteps = $( "#selectedSteps" );
- 
-    // let the stepsList items be draggable
-    $( "li", $stepsList ).draggable({
-      cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-      revert: "invalid", // when not dropped, the item will revert back to its initial position
-      containment: "document",
-      helper: "clone",
-      cursor: "move"
-    });
- 
-    // let the selectedSteps be droppable, accepting the stepsList items
-    $selectedSteps.droppable({
-      accept: "#stepsList > li",
-      activeClass: "ui-state-highlight",
-      drop: function( event, ui ) {
-        addStepToSelected( ui.draggable );
-      }
-    });
- 
-    // let the stepsList be droppable as well, accepting items from the selectedSteps
-    $stepsList.droppable({
-      accept: "#selectedSteps li",
-      activeClass: "custom-state-active",
-      drop: function( event, ui ) {
-        deleteStepFromSelected( ui.draggable );
-      }
-    });
- 
-    // image deletion function
-    var recycle_icon = "<a href='link/to/recycle/script/when/we/have/js/off' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</a>";
-    function addStepToSelected( $item ) {
-      $item.fadeOut(function() {
-        var $list = $( "ul", $selectedSteps ).length ?
-          $( "ul", $selectedSteps ) :
-          $( "<ul class='stepsList ui-helper-reset'/>" ).appendTo( $selectedSteps );
- 
-        $item.find( "a.ui-icon-selectedSteps" ).remove();
-        $item.append( recycle_icon ).appendTo( $list ).fadeIn(function() {
-          $item
-          .animate({ width: "96%" });
-        });
-      });
-    }
- 
-    // image recycle function
-    var selectedSteps_icon = "<a href='link/to/selectedSteps/script/when/we/have/js/off' title='Delete this image' class='ui-icon ui-icon-selectedSteps'>Delete image</a>";
-    function deleteStepFromSelected( $item ) {
-      $item.fadeOut(function() {
-        $item
-          .find( "a.ui-icon-refresh" )
-            .remove()
-          .end()
-          .css( "width", "auto")
-          .append( selectedSteps_icon )
-          .find( "img" )
-            .css( "height", "72px" )
-          .end()
-          .appendTo( $stepsList )
-          .fadeIn();
-      });
-    }
-
-    function viewScriptContent( $item ) {
-        addReplicationScript($item);
-    }
-
-    function deleteStep( $item ) {
-        var name = $item[0].parentNode.getElementsByTagName('h5')[0].innerText;
-        var cmd = {
-            'Cmd': 'deleteReplicationStepScript',
-            'Data': name
-        };
-        websocket.send(JSON.stringify(cmd));
-    }
-
-    function testStep( $item ) {
-        var name = $item[0].parentNode.getElementsByTagName('h5')[0].innerText;
-        var cmd = {
-            'Cmd': 'testReplicationStepScript',
-            'Data': name
-        };
-        websocket.send(JSON.stringify(cmd));
-    }
-
-    // resolve the icons behavior with event delegation
-    $( "ul.stepsList > li" ).click(function( event ) {
-      var $item = $( this ),
-        $target = $( event.target );
- 
-      if ( $target.is( "a.ui-icon-selectedSteps" ) ) {
-        addStepToSelected( $item );
-      } else if ( $target.is( "a.ui-icon-refresh" ) ) {
-        deleteStepFromSelected( $item );
-      } else if ( $target.is( "a.ui-icon-zoomin" ) ) {
-        viewScriptContent( $target );
-      } else if ( $target.is( "a.ui-icon-trash" ) ) {
-        deleteStep( $target );
-      } else if ( $target.is( "a.ui-icon-play" ) ) {
-        testStep( $target );
-      }
- 
-      return false;
-    });
-  };//);
-
 window.onload = function () {
     WebSocket_connect();
-    stepsInit();
+    showReplStepsSettings();
 };
-
-function saveSetting() {
-    var selectedSteps = [];
-    var lis = document.getElementById('selectedSteps').getElementsByTagName('li');
-    for (var i = 0; i < lis.length; i++) {
-        selectedSteps.push(lis[i].getElementsByTagName('h5')[0].innerText)
-    }
-    console.log(selectedSteps);
-    var cmd = {
-        'Cmd': 'saveReplicationStepsSelected',
-        'Data': JSON.stringify(selectedSteps)
-    };
-    websocket.send(JSON.stringify(cmd));
-}
 
 function WebSocket_connect() {
     console.log("[Websocket debug] ==> Websocket url for connect: ws://" + location.host + "/ws");
@@ -141,14 +19,12 @@ function WebSocket_connect() {
     websocket.onopen = function () {
         if (reconnect) {
             showSuccessToast("Websocket: Соединение восстановленно");
+            if (currPage == 'showReplStepsSettings') {
+                showReplStepsSettings();
+            }
             reconnect = false;
         }
         console.log("[Websocket debug] ==> Соединение установлено.");
-        var cmd = {
-            'Cmd': 'subscribe',
-            'Data': 'replicationSteps'
-        };
-        websocket.send(JSON.stringify(cmd));
     };
     websocket.onclose = function (event) {
         if (event.wasClean) {
@@ -165,11 +41,20 @@ function WebSocket_connect() {
     websocket.onerror = function (error) {
         console.log("[Websocket debug] ==> Ошибка " + error.message);
     };
+}
 
-    websocket.onmessage = function (event) {
-        var data = $.parseJSON(event.data);
-        data = JSON.parse(data);
-        var mydiv = document.getElementById("main_data");
+/* Replication Steps */
+
+function showReplStepsSettings() {
+    currPage = 'showReplStepsSettings';
+    document.getElementById('main_data').innerHTML = '';
+    $.get('/databases/settings/steps',function(content) {
+        document.getElementById('main_data').innerHTML = content;
+        waitForSocketConnection(websocket, SubscribeForSteps);
+        websocket.onmessage = function (event) {
+            var data = $.parseJSON(event.data);
+            data = JSON.parse(data);
+            var mydiv = document.getElementById("main_data");
         console.log("[Websocket debug] ==> Получены данные: " + data);
         if (data.Channel == "Error") {
             showErrorToast(data.Data);
@@ -205,12 +90,12 @@ function WebSocket_connect() {
                 <a href="#" title="View step content" class="ui-icon ui-icon-zoomin">View step content</a> \
                 <a href="#" title="Run test" class="ui-icon ui-icon-play">Run test</a> \
                 <a href="#" title="Delete step" class="ui-icon ui-icon-trash">Delete step</a> \
-                <a href="link/to/selectedSteps/script/when/we/have/js/off" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a></li>';
+                <a href="#" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a></li>';
                     console.log(document.getElementById("stepsList").innerHTML);
                 } else {
                     document.getElementById("stepsList").innerHTML += '<li class="ui-widget-content ui-corner-tr"> \
                 <h5 class="ui-widget-header">' + data.Data.Name + '</h5> \
-                <a href="link/to/selectedSteps/script/when/we/have/js/off" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a></li>';
+                <a href="#" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a></li>';
                 }
                 stepsInit();
             }
@@ -268,6 +153,135 @@ function WebSocket_connect() {
             }
         }
     };
+
+        stepsInit();
+        saver = function() {
+            var selectedSteps = [];
+            var lis = document.getElementById('selectedSteps').getElementsByTagName('li');
+            for (var i = 0; i < lis.length; i++) {
+                selectedSteps.push(lis[i].getElementsByTagName('h5')[0].innerText)
+            }
+            console.log(selectedSteps);
+            var cmd = {
+                'Cmd': 'saveReplicationStepsSelected',
+                'Data': JSON.stringify(selectedSteps)
+            };
+            websocket.send(JSON.stringify(cmd));
+        }
+    });
+}
+
+function stepsInit() {
+    // there's the stepsList and the selectedSteps
+    var $stepsList = $( "#stepsList" ),
+      $selectedSteps = $( "#selectedSteps" );
+
+    // let the stepsList items be draggable
+    $( "li", $stepsList ).draggable({
+      cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+      revert: "invalid", // when not dropped, the item will revert back to its initial position
+      containment: "document",
+      helper: "clone",
+      cursor: "move"
+    });
+
+    // let the selectedSteps be droppable, accepting the stepsList items
+    $selectedSteps.droppable({
+      accept: "#stepsList > li",
+      activeClass: "ui-state-highlight",
+      drop: function( event, ui ) {
+        addStepToSelected( ui.draggable );
+      }
+    });
+
+    // let the stepsList be droppable as well, accepting items from the selectedSteps
+    $stepsList.droppable({
+      accept: "#selectedSteps li",
+      activeClass: "custom-state-active",
+      drop: function( event, ui ) {
+        deleteStepFromSelected( ui.draggable );
+      }
+    });
+
+    // image deletion function
+    var recycle_icon = "<a href='#' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</a>";
+    function addStepToSelected( $item ) {
+      $item.fadeOut(function() {
+        var $list = $( "ul", $selectedSteps ).length ?
+          $( "ul", $selectedSteps ) :
+          $( "<ul class='stepsList ui-helper-reset'/>" ).appendTo( $selectedSteps );
+
+        $item.find( "a.ui-icon-selectedSteps" ).remove();
+        $item.append( recycle_icon ).appendTo( $list ).fadeIn(function() {
+          $item
+          .animate({ width: "96%" });
+        });
+      });
+    }
+
+    // image recycle function
+    var selectedSteps_icon = "<a href='#' title='Delete this image' class='ui-icon ui-icon-selectedSteps'>Delete image</a>";
+    function deleteStepFromSelected( $item ) {
+      $item.fadeOut(function() {
+        $item
+          .find( "a.ui-icon-refresh" )
+            .remove()
+          .end()
+          .css( "width", "auto")
+          .append( selectedSteps_icon )
+          .find( "img" )
+            .css( "height", "72px" )
+          .end()
+          .appendTo( $stepsList )
+          .fadeIn();
+      });
+    }
+
+    function viewScriptContent( $item ) {
+        addReplicationScript($item);
+    }
+
+    function deleteStep( $item ) {
+        var name = $item[0].parentNode.getElementsByTagName('h5')[0].innerText;
+        var cmd = {
+            'Cmd': 'deleteReplicationStepScript',
+            'Data': name
+        };
+        websocket.send(JSON.stringify(cmd));
+    }
+
+    function testStep( $item ) {
+        var name = $item[0].parentNode.getElementsByTagName('h5')[0].innerText;
+        var cmd = {
+            'Cmd': 'testReplicationStepScript',
+            'Data': name
+        };
+        websocket.send(JSON.stringify(cmd));
+    }
+
+    // resolve the icons behavior with event delegation
+    $( "ul.stepsList > li" ).click(function( event ) {
+      var $item = $( this ),
+        $target = $( event.target );
+
+      if ( $target.is( "a.ui-icon-selectedSteps" ) ) {
+        addStepToSelected( $item );
+      } else if ( $target.is( "a.ui-icon-refresh" ) ) {
+        deleteStepFromSelected( $item );
+      } else if ( $target.is( "a.ui-icon-zoomin" ) ) {
+        viewScriptContent( $target );
+      } else if ( $target.is( "a.ui-icon-trash" ) ) {
+        deleteStep( $target );
+      } else if ( $target.is( "a.ui-icon-play" ) ) {
+        testStep( $target );
+      }
+
+      return false;
+    });
+}
+
+function saveSetting() {
+    saver();
 }
 
 function testReplicationScript(data, error) {
@@ -375,6 +389,33 @@ function addReplicationScript(obj) {
   document.getElementById("scriptname").focus();
 }
 
+function SubscribeForSteps() {
+    var cmd = {
+            'Cmd': 'subscribe',
+            'Data': 'replicationSteps'
+        };
+        websocket.send(JSON.stringify(cmd));
+}
+
+function UnsubscribeForSteps() {
+    var cmd = {
+            'Cmd': 'unsubscribe',
+            'Data': 'replicationSteps'
+        };
+        websocket.send(JSON.stringify(cmd));
+}
+
+/* Replication Variables */
+
+function scriptVariables() {
+    UnsubscribeForSteps();
+    document.getElementById('main_data').innerHTML = '';
+    $.get('/databases/settings/variables',function(content) {
+        document.getElementById('main_data').innerHTML = content;
+        stepsInit();
+    });
+}
+
 function showSuccessToast(message) {
     $().toastmessage('showSuccessToast', message);
 }
@@ -453,4 +494,22 @@ function showErrorToastFunc(message, func) {
 
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function waitForSocketConnection(socket, callback){
+    setTimeout(
+        function () {
+            if (socket.readyState === 1) {
+                console.log("Connection is made");
+                if(callback != null){
+                    callback();
+                }
+                return;
+
+            } else {
+                console.log("wait for connection...");
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5); // wait 5 milisecond for the connection...
 }

@@ -1,9 +1,10 @@
 package events
 
 import (
+	"encoding/json"
+
 	"../convert"
 	"../databases"
-	"encoding/json"
 )
 
 func replicationStepsSubscribe(event string, ip string) {

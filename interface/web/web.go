@@ -39,6 +39,8 @@ func Start(conf config.HTTPConfig) {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/databases", handleDatabases)
 	http.HandleFunc("/databases/settings", handleDBSettings)
+	http.HandleFunc("/databases/settings/variables", handleDBSettingsVars)
+	http.HandleFunc("/databases/settings/steps", handleDBSettingsSteps)
 	http.HandleFunc("/ws", handleWs)
 	var err error
 	templates, err = template.ParseGlob(conf.TemplateDir + "/html/*.html")
@@ -81,6 +83,30 @@ func handleDBSettings(w http.ResponseWriter, r *http.Request) {
 	}
 	pageData := &DBSetDataOnLoad{User: r.UserAgent() + " " + r.Host, StepsList: databases.GetReplicaStepsForChoose()}
 	err := templates.ExecuteTemplate(w, "DatabasesSettingsPage", &PadeDescription{Title: "Database Settings", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: pageData})
+	if err != nil {
+		log.Println("Error send error's page: " + err.Error())
+	}
+}
+
+func handleDBSettingsVars(w http.ResponseWriter, r *http.Request) {
+	type DBSetDataOnLoad struct {
+		User      string
+		StepsList []databases.MySQLReplicaStep
+	}
+	pageData := &DBSetDataOnLoad{User: r.UserAgent() + " " + r.Host, StepsList: databases.GetReplicaStepsForChoose()}
+	err := templates.ExecuteTemplate(w, "DatabasesSettingsVarsPage", &PadeDescription{Title: "Database Settings", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: pageData})
+	if err != nil {
+		log.Println("Error send error's page: " + err.Error())
+	}
+}
+
+func handleDBSettingsSteps(w http.ResponseWriter, r *http.Request) {
+	type DBSetDataOnLoad struct {
+		User      string
+		StepsList []databases.MySQLReplicaStep
+	}
+	pageData := &DBSetDataOnLoad{User: r.UserAgent() + " " + r.Host, StepsList: databases.GetReplicaStepsForChoose()}
+	err := templates.ExecuteTemplate(w, "DatabasesSettingsStepsPage", &PadeDescription{Title: "Database Settings", StaticTemplate: "IndexStatic", Template: "IndexPage", Data: pageData})
 	if err != nil {
 		log.Println("Error send error's page: " + err.Error())
 	}

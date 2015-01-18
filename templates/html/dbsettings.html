@@ -25,51 +25,21 @@
  
 <div class="main">
 <div class="data">{{.Data.User}}
-  <div class="general_buttons" align="right"><a href="#" class="primary button" onclick="addReplicationScript();"><span class="plus icon"></span>Add script as step</a>&nbsp;&nbsp;<a href="#" class="primary button" onclick="saveSetting();"><span class="lock icon" style="font-size: medium"></span>Save settings</a></div>
+<div class="general_buttons" align="right"><a href="#" class="primary button" onclick="addReplicationScript();"><span class="plus icon"></span>Add script as step</a>&nbsp;&nbsp;<a href="#" class="primary button" onclick="saveSetting();"><span class="lock icon" style="font-size: medium"></span>Save settings</a></div>
   </div>
 <div class="main_cont">
   <div class="menu_top_bg"></div>
   <div class="sub_menu" id="nav">
     <ul>
-      <li><a href="#" class="selected">MySQL Moving Replication</a></li>
+      <li><a href="#" class="selected" onclick="showReplStepsSettings()">MySQL Moving Replication</a></li>
+    </ul>
+    <ul>
+      <li><a href="#" onclick="scriptVariables()">Script variables</a></li>
     </ul>
   </div>
 </div>
 <div class="main_window" id="main_data">
-  <p>Steps of Replication changer:</p><br>
-<div class="ui-widget ui-helper-clearfix">
- 
-<ul id="stepsList" class="stepsList ui-widget-content ui-state-default ui-helper-reset ui-helper-clearfix">
-  <h4 class="ui-widget-header"><span class="ui-icon ui-icon-selectedSteps"></span>Steps:</h4>
-  {{ range $index, $step := .Data.StepsList }}
-  <li class="ui-widget-content ui-corner-tr">
-  <h5 class="ui-widget-header">{{.Name}}</h5>
-    {{ if .Content}}
-    <a href="#" title="View step content" class="ui-icon ui-icon-zoomin">View step content</a>
-    <a href="#" title="Run test" class="ui-icon ui-icon-play">Run test</a>
-    <a href="#" title="Delete step" class="ui-icon ui-icon-trash">Delete step</a>
-    {{ end }}
-    <a href="link/to/selectedSteps/script/when/we/have/js/off" title="Select step" class="ui-icon ui-icon-selectedSteps">Select step</a>
-  </li>
-  {{ end }}
-</ul>
- 
-<div id="selectedSteps" class="ui-widget-content ui-state-default">
-  <h4 class="ui-widget-header"><span class="ui-icon ui-icon-selectedSteps"></span>Selected steps:</h4>
 </div>
- 
-</div>
-</div>
-</div>
-<script>
-var stepsList = {
-  {{ range $index, $step := .Data.StepsList }}
-  {{ if .Content }}
-  {{.Name}}: {{.Content}},
-  {{ end }}
-  {{ end }}
-}
-</script>
 
 {{template "footer"}}
 {{end}}
