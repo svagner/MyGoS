@@ -3,7 +3,6 @@ package mysql
 import (
 	"database/sql"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/svagner/MyGoS/interface/databases"
 )
 

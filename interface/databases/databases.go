@@ -282,12 +282,15 @@ func concatReplSteps(old1, old2 []MySQLReplicaStep) MySQLReplicaStepArray {
 
 func SetNewReplicaSteps(names []string) {
 	newslice := make(MySQLReplicaStepArray, len(names))
-	for _, step := range myReplChoosenSteps {
+	for _, step := range mySQLReplStepsHash {
 		step.Pos = -1
 	}
 	for idx, name := range names {
 		mySQLReplStepsHash[name].Pos = idx
 		newslice = append(newslice, *mySQLReplStepsHash[name])
+	}
+	for key, value := range mySQLReplStepsHash {
+		log.Println(key, value.Pos)
 	}
 	myReplChoosenSteps = newslice
 }
