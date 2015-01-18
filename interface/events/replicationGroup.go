@@ -1,9 +1,10 @@
 package events
 
 import (
-	"../convert"
-	"../databases"
 	"encoding/json"
+
+	"github.com/svagner/MyGoS/interface/convert"
+	"github.com/svagner/MyGoS/interface/databases"
 )
 
 type ResCmd struct {

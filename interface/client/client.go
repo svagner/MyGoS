@@ -1,13 +1,13 @@
 package client
 
 import (
-	//	"../../tools/mysql"
-	"../convert"
-	"../databases"
-	"../events"
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"log"
+
+	"github.com/gorilla/websocket"
+	"github.com/svagner/MyGoS/interface/convert"
+	"github.com/svagner/MyGoS/interface/databases"
+	"github.com/svagner/MyGoS/interface/events"
 )
 
 type eventsList []string

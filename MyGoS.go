@@ -1,16 +1,17 @@
 package main
 
 import (
-	"./config"
-	"./interface/databases"
-	"./interface/web"
-	"./tools/backup"
 	"flag"
-	"github.com/yookoala/realpath/realpath"
 	"log"
 	"os"
 	"runtime"
 	"syscall"
+
+	"github.com/svagner/MyGoS/config"
+	"github.com/svagner/MyGoS/interface/databases"
+	"github.com/svagner/MyGoS/interface/web"
+	"github.com/svagner/MyGoS/tools/backup"
+	"github.com/yookoala/realpath/realpath"
 )
 
 func daemonize(nochdir, noclose bool) (*os.Process, error) {

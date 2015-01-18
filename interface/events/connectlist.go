@@ -1,7 +1,7 @@
 package events
 
 import (
-	"../convert"
+	"github.com/svagner/MyGoS/interface/convert"
 )
 
 func ConnectionListSubscribe(event string, ip string) {

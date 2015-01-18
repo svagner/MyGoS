@@ -1,10 +1,11 @@
 package events
 
 import (
-	"../../tools/mysql"
-	"../convert"
 	"encoding/json"
 	"time"
+
+	"github.com/svagner/MyGoS/interface/convert"
+	"github.com/svagner/MyGoS/tools/mysql"
 )
 
 const (

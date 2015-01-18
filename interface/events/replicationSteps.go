@@ -3,8 +3,8 @@ package events
 import (
 	"encoding/json"
 
-	"../convert"
-	"../databases"
+	"github.com/svagner/MyGoS/interface/convert"
+	"github.com/svagner/MyGoS/interface/databases"
 )
 
 func replicationStepsSubscribe(event string, ip string) {

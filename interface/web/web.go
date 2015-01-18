@@ -1,15 +1,16 @@
 package web
 
 import (
-	"../../config"
-	"../client"
-	"../databases"
-	"../events"
-	"github.com/gorilla/websocket"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/websocket"
+	"github.com/svagner/MyGoS/config"
+	"github.com/svagner/MyGoS/interface/client"
+	"github.com/svagner/MyGoS/interface/databases"
+	"github.com/svagner/MyGoS/interface/events"
 )
 
 type errorPage struct {

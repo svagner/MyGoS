@@ -1,9 +1,10 @@
 package mysql
 
 import (
-	"../../interface/databases"
 	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/svagner/MyGoS/interface/databases"
 )
 
 type masterInfo struct {
